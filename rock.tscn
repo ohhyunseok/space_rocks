@@ -19,4 +19,3 @@ texture = ExtResource("1_o0qsl")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 
 [node name="Explosion" parent="." instance=ExtResource("3_wecdg")]
-frame = 63
