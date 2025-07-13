@@ -1,5 +1,11 @@
 extends RigidBody2D
 
+signal lives_changed
+signal dead
+
+var reset_pos = false
+var lives = 0: set = set_lives
+
 @export var engin_power = 500
 @export var spin_power =800
 @export var bullet_scene : PackedScene
@@ -54,6 +60,9 @@ func _integrate_forces(physics_state: PhysicsDirectBodyState2D) -> void:
 	xform.origin.x = wrapf(xform.origin.x, 0, screensize.x)
 	xform.origin.y = wrapf(xform.origin.y, 0, screensize.y)
 	physics_state.transform = xform
+	if reset_pos:
+		physics_state.transform.origin = screensize / 2
+		reset_pos = false
 	
 func shoot():
 	if state == INVULNERABLE:
@@ -64,6 +73,19 @@ func shoot():
 	get_tree().root.add_child(b)
 	b.start($Muzzle.global_transform)
 
-
 func _on_gun_cool_down_timeout() -> void:
 	can_shoot = true
+
+func set_lives(value):
+	lives = value
+	lives_changed.emit(lives)
+	if lives <= 0:
+		change_state(DEAD)
+	else:
+		change_state(INVULNERABLE)
+
+func reset():
+	reset_pos = true
+	$Sprite2D.show()
+	lives = 3
+	change_state(ALIVE)
