@@ -9,6 +9,8 @@
 radius = 36.0139
 
 [node name="Player" type="RigidBody2D"]
+contact_monitor = true
+max_contacts_reported = 1
 script = ExtResource("1_onrkg")
 bullet_scene = ExtResource("2_i3pqv")
 
@@ -33,4 +35,6 @@ position = Vector2(50, 0)
 wait_time = 2.0
 one_shot = true
 
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
 [connection signal="timeout" from="GunCoolDown" to="." method="_on_gun_cool_down_timeout"]
+[connection signal="timeout" from="InvulnerabilityTimer" to="." method="_on_invulnerability_timer_timeout"]
