@@ -6,6 +6,13 @@ signal start_game
 @onready var score_label = $MarginContainer/HBoxContainer/ScoreLabel
 @onready var message = $VBoxContainer/Message
 @onready var start_button = $VBoxContainer/StartButton
+@onready var shield_bar = $MarginContainer/HBoxContainer/ShieldBar
+
+var bar_textures = {
+	"green": preload("res://assets/bar_green_200.png"),
+	"yellow": preload("res://assets/bar_yellow_200.png"),
+	"red": preload("res://assets/bar_red_200.png")	
+}
 
 func show_message(text):
 	message.text = text
@@ -25,8 +32,6 @@ func game_over():
 	start_button.show()
 	
 
-	
-
 func _on_start_button_pressed() -> void:
 	start_button.hide()
 	start_game.emit()
@@ -39,4 +44,13 @@ func _on_timer_timeout() -> void:
 
 func update_lives() -> void:
 	pass # Replace with function body.
-			
+
+
+func update_sheild(value):
+	shield_bar.texture_progress = bar_textures["green"]			
+	if value < 0.4:
+		shield_bar.texture_progress = bar_textures["red"]
+	elif value < 0.7:
+		shield_bar.texture_progress = bar_textures["yellow"]
+	shield_bar.value = value
+	

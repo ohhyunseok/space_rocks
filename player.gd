@@ -2,6 +2,7 @@ extends RigidBody2D
 
 signal lives_changed
 signal dead
+signal shield_changed
 
 var reset_pos = false
 var lives = 0: set = set_lives
@@ -10,6 +11,10 @@ var lives = 0: set = set_lives
 @export var spin_power =800
 @export var bullet_scene : PackedScene
 @export var fire_rate = 0.25
+@export var max_shield = 100.0
+@export var shield_regen = 5.0
+
+var shield = 0: set = set_shield
 
 var can_shoot = true
 var thrust = Vector2.ZERO
@@ -42,10 +47,12 @@ func change_state(new_state):
 			$Sprite2D.hide()
 			linear_velocity = Vector2.ZERO
 			dead.emit()
+			$EngineSound.stop()
 	state = new_state
 
 func _process(delta: float) -> void:
 	get_input()
+	shield += shield_regen * delta
 	
 func get_input():
 	thrust = Vector2.ZERO
@@ -53,6 +60,11 @@ func get_input():
 		return
 	if Input.is_action_pressed("thrust"):
 		thrust = transform.x * engin_power
+		if not $EngineSound.playing:
+			$EngineSound.play()
+	else:
+		$EngineSound.stop()
+		
 	if Input.is_action_pressed("shoot") and can_shoot:
 		shoot()
 		
@@ -79,6 +91,8 @@ func shoot():
 	var b = bullet_scene.instantiate()
 	get_tree().root.add_child(b)
 	b.start($Muzzle.global_transform)
+	$LaserSound.play()
+		   	
 
 func _on_gun_cool_down_timeout() -> void:
 	can_shoot = true
@@ -90,6 +104,8 @@ func set_lives(value):
 		change_state(DEAD)
 	else:
 		change_state(INVULNERABLE)
+	shield = max_shield
+
 
 func reset():
 	reset_pos = true
@@ -102,12 +118,20 @@ func _on_invulnerability_timer_timeout() -> void:
 
 func _on_body_entered(body: Node) -> void:
 	if body.is_in_group("rocks"):
+		shield -= body.size * 25
 		body.explode()
-		lives -= 1
-		explode()
 		
 func explode():
 	$Explosion.show()
 	$Explosion/AnimationPlayer.play("explosion")
 	await $Explosion/AnimationPlayer.animation_finished
 	$Explosion.hide()
+
+func set_shield(value):
+	value = min(value, max_shield)
+	shield = value
+	shield_changed.emit(shield / max_shield)
+	if shield <= 0:
+		lives -= 1
+		explode()
+	

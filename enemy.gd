@@ -23,11 +23,12 @@ func _physics_process(delta: float) -> void:
 		queue_free()
 
 func shoot():
+	$ShootSound.play()
 	var dir = global_position.direction_to(target.global_position)
 	dir = dir.rotated(randf_range(-bulluet_spread, bulluet_spread))
 	var b = bullet_scene.instantiate()
 	get_tree().root.add_child(b)
-	b.start(global_position, dir)
+	b.start(global_position, dir)	
 
 
 func _on_gun_cooldown_timeout() -> void:
@@ -37,3 +38,28 @@ func shoot_pulse(n, delay):
 	for i in n:
 		shoot()
 		await get_tree().create_timer(delay).timeout
+		
+func take_damage(amount):
+	health -= amount
+	$AnimationPlayer.play("flash")
+	if health <= 0:
+		explode()
+
+func explode():
+	$ExplosionSound.play()
+	speed = 0
+	$GunCooldown.stop()
+	$CollisionShape2D.set_deferred("disabled",true)
+	$Sprite2D.hide()
+	$Explosion.show()
+	$Explosion/AnimationPlayer.play("explosion")
+	await $Explosion/AnimationPlayer.animation_finished
+	queue_free()
+	
+
+func _on_body_entered(body: Node2D) -> void:
+	if body.is_in_group("rocks"):
+		return
+	explode()
+	body.shield -=50
+	
