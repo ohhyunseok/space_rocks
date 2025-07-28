@@ -2,7 +2,7 @@ extends CanvasLayer
 
 signal start_game
 
-@onready var live_counter = $MarginContainer/HBoxContainer/LiveCounter.get_children()
+@onready var lives_counter = $MarginContainer/HBoxContainer/LiveCounter.get_children()
 @onready var score_label = $MarginContainer/HBoxContainer/ScoreLabel
 @onready var message = $VBoxContainer/Message
 @onready var start_button = $VBoxContainer/StartButton
@@ -22,9 +22,9 @@ func show_message(text):
 func update_score(value):
 	score_label.text = str(value)
 	
-func update_live(value):
+func update_lives(value):
 	for item in 3:
-		live_counter[item].visible = value > item
+		lives_counter[item].visible = value > item
 
 func game_over():
 	show_message("Game Over")
@@ -40,10 +40,6 @@ func _on_start_button_pressed() -> void:
 func _on_timer_timeout() -> void:
 	message.hide()
 	message.text = ""
-
-
-func update_lives() -> void:
-	pass # Replace with function body.
 
 
 func update_sheild(value):
