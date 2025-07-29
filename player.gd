@@ -55,12 +55,12 @@ func _process(delta: float) -> void:
 	shield += shield_regen * delta
 	
 func get_input():
-	$Exhaust.emtting = false
+	$Exhaust.emitting = false
 	thrust = Vector2.ZERO
 	if state in [DEAD, INIT]:
 		return
 	if Input.is_action_pressed("thrust"):
-		$Exhaust.emtting = true
+		$Exhaust.emitting = true
 		thrust = transform.x * engin_power
 		if not $EngineSound.playing:
 			$EngineSound.play()
