@@ -24,7 +24,7 @@ func start(_position, _velcity, _size):
 func _integrate_forces(physics_state: PhysicsDirectBodyState2D) -> void:
 	var xform = physics_state.transform
 	xform.origin.x = wrapf(xform.origin.x,0 - radius, screensize.x + radius)
-	xform.origin.x = wrapf(xform.origin.x,0 - radius, screensize.x + radius)
+	xform.origin.y = wrapf(xform.origin.y,0 - radius, screensize.y + radius)
 	physics_state.transform = xform
 	
 func explode():

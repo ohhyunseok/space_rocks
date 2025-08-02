@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://bkhx62h7k8j21"]
+[gd_scene load_steps=16 format=3 uid="uid://bkhx62h7k8j21"]
 
 [ext_resource type="Script" uid="uid://bxvgew2omtsmi" path="res://enemy.gd" id="1_iifgy"]
 [ext_resource type="PackedScene" uid="uid://d2t4pv02excsu" path="res://enemy_bullet.tscn" id="2_3yqyl"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://bbxfwinhrqcem" path="res://explosion.tscn" id="4_wujgv"]
 [ext_resource type="AudioStream" uid="uid://ckckxicfxlddy" path="res://assets/sounds/explosion.wav" id="6_3yqyl"]
 [ext_resource type="AudioStream" uid="uid://busvswxcmmqgv" path="res://assets/sounds/enemy_laser.wav" id="7_wujgv"]
+[ext_resource type="Texture2D" uid="uid://ccu727xjtonl2" path="res://assets/corona.png" id="8_hb8ge"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_dl81w"]
 radius = 40.0
@@ -49,6 +50,17 @@ _data = {
 &"flash": SubResource("Animation_5rgpn")
 }
 
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_hb8ge"]
+blend_mode = 1
+
+[sub_resource type="Curve" id="Curve_hb8ge"]
+_data = [Vector2(0.00347222, 1), 0.0, 0.0, 0, 0, Vector2(0.982639, 0.204836), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Gradient" id="Gradient_hb8ge"]
+offsets = PackedFloat32Array(0, 0.667939, 1)
+colors = PackedColorArray(1, 0.647059, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1)
+
 [node name="Enemy" type="Area2D" groups=["enemies"]]
 script = ExtResource("1_iifgy")
 bullet_scene = ExtResource("2_3yqyl")
@@ -80,6 +92,20 @@ stream = ExtResource("6_3yqyl")
 [node name="ShootSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("7_wujgv")
 volume_db = -10.0
+
+[node name="CPUParticles2D" type="CPUParticles2D" parent="."]
+show_behind_parent = true
+material = SubResource("CanvasItemMaterial_hb8ge")
+amount = 20
+texture = ExtResource("8_hb8ge")
+lifetime = 0.1
+emission_shape = 1
+emission_sphere_radius = 25.0
+gravity = Vector2(0, 0)
+scale_amount_min = 0.1
+scale_amount_max = 0.1
+scale_amount_curve = SubResource("Curve_hb8ge")
+color_ramp = SubResource("Gradient_hb8ge")
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
 [connection signal="timeout" from="GunCooldown" to="." method="_on_gun_cooldown_timeout"]
